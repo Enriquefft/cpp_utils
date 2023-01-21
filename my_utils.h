@@ -1,12 +1,12 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef MY_UTILS_H
+#define MY_UTILS_H
 
 #include <stdexcept>
 #include <sys/uio.h> // uint & ulong
 #include <type_traits>
 #include <utility> // std::pair
 
-namespace utils {
+namespace my_utils {
 
 template <typename T> using range_t = const std::pair<T, T> &;
 
@@ -44,6 +44,6 @@ extern template double  RandomNum<double>(const double &min, const double &max);
 extern template uint    RandomNum<uint>  (const uint   &min, const uint   &max);
 extern template ulong   RandomNum<ulong> (const ulong  &min, const ulong  &max);
 
-} // namespace utils
+} // namespace my_utils
 
-#endif // !UTILS_H
+#endif // !MY_UTILS_H

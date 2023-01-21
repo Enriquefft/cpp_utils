@@ -1,9 +1,9 @@
-#include "utils.h"
+#include "my_utils.h"
 
 #include <random>
 #include <stdexcept>
 
-namespace utils {
+namespace my_utils {
 
 using std::uniform_int_distribution;
 using std::uniform_real_distribution;
@@ -44,4 +44,4 @@ template double  RandomNum<double>(const double &min, const double &max);
 template uint    RandomNum<uint>  (const uint   &min, const uint   &max);
 template ulong   RandomNum<ulong> (const ulong  &min, const ulong  &max);
 
-} // namespace utils
+} // namespace my_utils
