@@ -1,32 +1,26 @@
-cmake_minimum_required(VERSION 3.22)
-project(my_utils VERSION 0.1)
+cmake_minimum_required(VERSION 3.25.2)
+project(my_utils VERSION 1)
 
-# c++ VERSION 20
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(SOURCES main.cpp random.cpp unsignedCast.cpp)
+add_library(my_utils SHARED src/random.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-set(WARNINGS
-    -Weverything
-    -Wno-string-compare
-    -Wno-c++98-compat
-    -Wno-c++98-compat-pedantic
+set_target_properties(
+    my_utils
+    PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION 1
+        PUBLIC_HEADER include/my_utils.h
 )
 
-target_compile_options(
-    ${PROJECT_NAME}
-    PRIVATE
-        ${WARNINGS}
-        -fsanitize=address
-        -fsanitize=undefined
-        -fno-sanitize-recover=all
-)
+include(GNUInstallDirs)
 
-target_link_options(
-    ${PROJECT_NAME}
-    PRIVATE -fsanitize=address -fsanitize=undefined
+install(
+    TARGETS my_utils
+    LIBRARY
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
