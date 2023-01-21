@@ -1,0 +1,6 @@
+/.cache
+/build
+main
+a.out
+*.a
+*.o

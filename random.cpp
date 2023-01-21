@@ -3,9 +3,13 @@
 #include <random>
 #include <stdexcept>
 
-template <utils::Integral T> T utils::GenerarRandomNum(std::pair<T, T> rango) {
+namespace utils {
 
-  if (rango.first >= rango.second) {
+using std::uniform_int_distribution;
+using std::uniform_real_distribution;
+
+template <std::integral T> T RandomNum(const T &min, const T &max) {
+  if (min >= max) {
     throw std::invalid_argument(
         "El primer valor del rango debe ser menor al segundo");
   }
@@ -13,15 +17,12 @@ template <utils::Integral T> T utils::GenerarRandomNum(std::pair<T, T> rango) {
   std::random_device r_d;
   std::default_random_engine generator(r_d());
 
-  std::uniform_int_distribution<T> rand_num(rango.first, rango.second);
+  uniform_int_distribution<T> rand_num(min, max);
 
   return rand_num(generator);
 }
-
-template <utils::FloatingPoint T>
-T utils::GenerarRandomNum(std::pair<T, T> rango) {
-
-  if (rango.first >= rango.second) {
+template <std::floating_point T> T RandomNum(const T &min, const T &max) {
+  if (min >= max) {
     throw std::invalid_argument(
         "El primer valor del rango debe ser menor al segundo");
   }
@@ -29,20 +30,18 @@ T utils::GenerarRandomNum(std::pair<T, T> rango) {
   std::random_device r_d;
   std::default_random_engine generator(r_d());
 
-  std::uniform_real_distribution<T> rand_num(rango.first, rango.second);
+  uniform_real_distribution<T> rand_num(min, max);
 
   return rand_num(generator);
 }
 
 // explicit instantiation
 
-template int utils::GenerarRandomNum<int>(std::pair<int, int> rango);
-template float utils::GenerarRandomNum<float>(std::pair<float, float> rango);
-template double
-utils::GenerarRandomNum<double>(std::pair<double, double> rango);
-template long double
-utils::GenerarRandomNum<long double>(std::pair<long double, long double> rango);
-template unsigned int utils::GenerarRandomNum<unsigned int>(
-    std::pair<unsigned int, unsigned int> rango);
-template unsigned long utils::GenerarRandomNum<unsigned long>(
-    std::pair<unsigned long, unsigned long> rango);
+// clang-format off
+template int     RandomNum<int>   (const int    &min, const int    &max);
+template float   RandomNum<float> (const float  &min, const float  &max);
+template double  RandomNum<double>(const double &min, const double &max);
+template uint    RandomNum<uint>  (const uint   &min, const uint   &max);
+template ulong   RandomNum<ulong> (const ulong  &min, const ulong  &max);
+
+} // namespace utils
