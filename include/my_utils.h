@@ -1,48 +1,45 @@
 #ifndef MY_UTILS_H
 #define MY_UTILS_H
 
-#include <stdexcept>
-#include <sys/uio.h> // uint & ulong
-#include <type_traits>
+#include <cstdint>
 #include <utility> // std::pair
+
+using uint = unsigned int;
 
 namespace my_utils {
 
-template <typename T> using range_t = const std::pair<T, T> &;
+template <typename T> using range_t = std::pair<T, T>;
 
-template <std::integral T> T RandomNum(const T &min, const T &max);
-template <std::floating_point T> T RandomNum(const T &min, const T &max);
+template <typename T>
+concept arithmetic_t = std::is_arithmetic_v<T>;
 
-template <std::integral T> inline T RandomNum(range_t<T> rango) {
-  return RandomNum<T>(rango.first, rango.second);
-}
-template <std::floating_point T> inline T RandomNum(range_t<T> rango) {
-  return RandomNum<T>(rango.first, rango.second);
-}
+template <arithmetic_t T> class RandomNum {
+public:
+  explicit RandomNum(const range_t<T> &range);
+  RandomNum(const T &min, const T &max);
+
+  T operator()()
+    requires std::integral<T>;
+  T operator()()
+    requires std::floating_point<T>;
+
+private:
+  T m_min;
+  T m_max;
+};
 
 template <std::unsigned_integral T>
-inline constexpr auto UnsignedToSigned(const T &value) {
-  auto max = std::numeric_limits<std::make_signed_t<T>>::max();
-  if (value > static_cast<T>(max)) {
-    throw std::out_of_range("Value is out of range");
-  }
-  return static_cast<std::make_signed_t<T>>(value);
-}
+constexpr auto UnsignedToSigned(const T &value);
 
 template <std::signed_integral T>
-inline constexpr auto SignedToUnsigned(const T &value) {
-  if (value < 0) {
-    throw std::invalid_argument("Value must be positive");
-  }
-  return static_cast<std::make_unsigned_t<T>>(value);
-}
+constexpr auto SignedToUnsigned(const T &value);
 
 // clang-format off
-extern template int     RandomNum<int>   (const int    &min, const int    &max);
-extern template float   RandomNum<float> (const float  &min, const float  &max);
-extern template double  RandomNum<double>(const double &min, const double &max);
-extern template uint    RandomNum<uint>  (const uint   &min, const uint   &max);
-extern template ulong   RandomNum<ulong> (const ulong  &min, const ulong  &max);
+extern template class RandomNum<int>;
+extern template class RandomNum<uint>;
+extern template class RandomNum<float>;
+extern template class RandomNum<int8_t>;
+extern template class RandomNum<uint8_t>;
 
 } // namespace my_utils
 

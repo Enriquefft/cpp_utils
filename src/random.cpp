@@ -5,43 +5,42 @@
 
 namespace my_utils {
 
-using std::uniform_int_distribution;
-using std::uniform_real_distribution;
-
-template <std::integral T> T RandomNum(const T &min, const T &max) {
-  if (min >= max) {
-    throw std::invalid_argument(
-        "El primer valor del rango debe ser menor al segundo");
+template <arithmetic_t T>
+RandomNum<T>::RandomNum(const T &min, const T &max) : m_min(min), m_max(max) {
+  if (m_min > m_max) {
+    throw std::invalid_argument("min > max");
   }
-
-  std::random_device r_d;
-  std::default_random_engine generator(r_d());
-
-  uniform_int_distribution<T> rand_num(min, max);
-
-  return rand_num(generator);
 }
-template <std::floating_point T> T RandomNum(const T &min, const T &max) {
-  if (min >= max) {
-    throw std::invalid_argument(
-        "El primer valor del rango debe ser menor al segundo");
+template <arithmetic_t T>
+RandomNum<T>::RandomNum(const range_t<T> &range)
+    : m_min(range.first), m_max(range.second) {
+  if (m_min > m_max) {
+    throw std::invalid_argument("min > max");
   }
+}
+template <arithmetic_t T>
+T RandomNum<T>::operator()()
+  requires std::integral<T>
+{
+  static std::default_random_engine gen{std::random_device{}()};
+  return std::uniform_int_distribution<T>{m_min, m_max}(gen);
+}
 
-  std::random_device r_d;
-  std::default_random_engine generator(r_d());
-
-  uniform_real_distribution<T> rand_num(min, max);
-
-  return rand_num(generator);
+template <arithmetic_t T>
+T RandomNum<T>::operator()()
+  requires std::floating_point<T>
+{
+  static std::default_random_engine gen{std::random_device{}()};
+  return std::uniform_real_distribution<T>{m_min, m_max}(gen);
 }
 
 // explicit instantiation
 
 // clang-format off
-template int     RandomNum<int>   (const int    &min, const int    &max);
-template float   RandomNum<float> (const float  &min, const float  &max);
-template double  RandomNum<double>(const double &min, const double &max);
-template uint    RandomNum<uint>  (const uint   &min, const uint   &max);
-template ulong   RandomNum<ulong> (const ulong  &min, const ulong  &max);
+template class RandomNum<int>;
+template class RandomNum<uint>;
+template class RandomNum<float>;
+template class RandomNum<int8_t>;
+template class RandomNum<uint8_t>;
 
 } // namespace my_utils
