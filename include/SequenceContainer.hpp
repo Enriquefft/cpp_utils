@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <concepts>
 #include <ostream>
 
 // clang-format off

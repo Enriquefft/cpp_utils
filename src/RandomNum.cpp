@@ -1,4 +1,4 @@
-#include "my_utils.h"
+#include "include/RandomNum.hpp"
 
 #include <random>
 #include <stdexcept>
@@ -18,6 +18,7 @@ RandomNum<T>::RandomNum(const range_t<T> &range)
     throw std::invalid_argument("min > max");
   }
 }
+
 template <arithmetic_t T>
 T RandomNum<T>::operator()()
   requires std::integral<T>

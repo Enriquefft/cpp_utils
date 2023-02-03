@@ -5,16 +5,22 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_library(my_utils SHARED src/random.cpp)
+add_library(my_utils src/Sign.cpp src/RandomNum.cpp)
 
-target_include_directories(my_utils PRIVATE include)
+target_include_directories(my_utils PRIVATE .)
+
+set(UTILS_HEADERS
+    include/Sign.hpp
+    include/RandomNum.hpp
+    include/SequenceContainer.hpp
+)
 
 set_target_properties(
     my_utils
     PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION 1
-        PUBLIC_HEADER include/my_utils.h
+        PUBLIC_HEADER "${UTILS_HEADERS}"
 )
 
 include(GNUInstallDirs)
@@ -22,7 +28,7 @@ include(GNUInstallDirs)
 install(
     TARGETS my_utils
     LIBRARY
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/my_utils
     PUBLIC_HEADER
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/my_utils
 )
