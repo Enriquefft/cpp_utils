@@ -69,24 +69,15 @@ template <SequenceContainer T>
 std::ostream &operator<<(std::ostream &ost, const T &container) {
 
   if (container.empty()) {
-    ost << "Empty container";
     return ost;
   }
-
-  // if T is vector
-  if constexpr (std::is_same_v<T, std::basic_string<typename T::value_type>>) {
-    ost << "PRINTING BASIC STRING\n";
-    ost << container;
-    return ost;
-  }
-  constexpr bool IS_ARITHMETIC = std::is_arithmetic_v<typename T::value_type>;
 
   uint8_t window_width = GetTerminalWidth();
 
   // How many elements can fit in a line
   uint8_t elem_fit = 0;
 
-  if constexpr (IS_ARITHMETIC) {
+  if constexpr (std::is_arithmetic_v<typename T::value_type>) {
 
     auto [min_v, max_v] =
         std::minmax_element(container.begin(), container.end());
@@ -109,7 +100,6 @@ std::ostream &operator<<(std::ostream &ost, const T &container) {
     }
   } else {
 
-    ost << "Container is too big to fit in one line" << std::endl;
     uint8_t counter = 0;
     for (const auto &item : container) {
 
@@ -125,29 +115,17 @@ std::ostream &operator<<(std::ostream &ost, const T &container) {
     }
   }
 
-  ost << std::endl << static_cast<int>(window_width);
-
   return ost;
 }
 
 template <ContainerOfSequenceContainer T>
 std::ostream &operator<<(std::ostream &ost, const T &container) {
 
-  if (container.empty()) {
-    ost << "Empty container";
-    return ost;
-  }
-
-  // if T is vector
-  if constexpr (std::is_same_v<T, std::basic_string<typename T::value_type>>) {
-    ost << "PRINTING BASIC STRING\n";
-    ost << container;
-    return ost;
-  }
-
   for (const auto &item : container) {
     ost << item << std::endl;
   }
+
+  return ost;
 }
 
 #endif // SEQUENCE_CONTAINER_HPP
