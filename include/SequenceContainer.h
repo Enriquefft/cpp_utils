@@ -132,6 +132,23 @@ std::ostream &operator<<(std::ostream &ost, const T &container) {
 }
 
 template <ContainerOfSequenceContainer T>
-std::ostream &operator<<(std::ostream &ost, const T &container);
+std::ostream &operator<<(std::ostream &ost, const T &container) {
+
+  if (container.empty()) {
+    ost << "Empty container";
+    return ost;
+  }
+
+  // if T is vector
+  if constexpr (std::is_same_v<T, std::basic_string<typename T::value_type>>) {
+    ost << "PRINTING BASIC STRING\n";
+    ost << container;
+    return ost;
+  }
+
+  for (const auto &item : container) {
+    ost << item << std::endl;
+  }
+}
 
 #endif // SEQUENCE_CONTAINER_HPP
