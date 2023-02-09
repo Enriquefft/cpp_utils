@@ -1,5 +1,5 @@
-#ifndef SEQUENCE_CONTAINER_HPP
-#define SEQUENCE_CONTAINER_HPP
+#ifndef PRINTABLE_CONTAINER_HPP
+#define PRINTABLE_CONTAINER_HPP
 
 #ifdef WIN32
 #include <windows.h>
@@ -10,31 +10,35 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ostream>
+#include <iostream>
 
 // clang-format off
 
-// https://en.cppreference.com/w/cpp/named_req/SequenceContainer
+// https://en.cppreference.com/w/cpp/container
 template<typename T>
-concept SequenceContainer = requires(T cont) {
+concept PrintableContainer = requires(T cont) {
     typename T::value_type;
     typename T::size_type;
     typename T::difference_type;
     typename T::reference;
     typename T::const_reference;
-    {cont.empty  () }   -> std::convertible_to<bool>;
-    {cont.size   () }   -> std::convertible_to<typename T::size_type>;
-    {cont.front  () }   -> std::convertible_to<typename T::reference>;
-    {cont.back   () }   -> std::convertible_to<typename T::reference>;
-    {cont.begin  () }   -> std::convertible_to<typename T::iterator>;
-    {cont.end    () }   -> std::convertible_to<typename T::iterator>;
+
+    // iterable
     {cont.cbegin () }   -> std::convertible_to<typename T::const_iterator>;
     {cont.cend   () }   -> std::convertible_to<typename T::const_iterator>;
-    {cont.rbegin () }   -> std::convertible_to<typename T::reverse_iterator>;
-    {cont.rend   () }   -> std::convertible_to<typename T::reverse_iterator>;
-    {cont.crbegin() }   -> std::convertible_to<typename T::const_reverse_iterator>;
-    {cont.crend  () }   -> std::convertible_to<typename T::const_reverse_iterator>;
+
+    // container
+    {cont.empty  () }   -> std::convertible_to<bool>;
+    {cont.size   () }   -> std::convertible_to<typename T::size_type>;
+    {cont.max_size() }  -> std::convertible_to<typename T::size_type>;
+    {cont.empty  () }   -> std::convertible_to<bool>;
+
 } &&
+// value_type is printable
+requires(typename T::value_type val) {
+    {std::cout << val} -> std::convertible_to<std::ostream&>;
+} &&
+
 // disable for std::basic_string
 !std::is_same_v<T, std::basic_string<typename T::value_type>>;
 ;
@@ -42,12 +46,17 @@ concept SequenceContainer = requires(T cont) {
 
 // Container of containers
 template <typename T>
-concept ContainerOfSequenceContainer =
-    SequenceContainer<typename T::value_type> && SequenceContainer<T>;
+concept PrintableNestedContainer = PrintableContainer<typename T::value_type>;
 
-static inline uint8_t GetTerminalWidth() {
+// generic ostream overload
+template <PrintableContainer T>
+std::ostream &operator<<(std::ostream &ost, const T &container) {
+
+  if (container.empty()) {
+    return ost;
+  }
+
   uint8_t window_width = 0;
-
 #ifdef WIN32
   CONSOLE_SCREEN_BUFFER_INFO csbi;
   GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
@@ -59,20 +68,8 @@ static inline uint8_t GetTerminalWidth() {
 #endif
 
   if (window_width == 0) {
-    throw std::runtime_error("Could not get terminal width");
+    throw std::runtime_error("Could not get window width");
   }
-  return window_width;
-}
-
-// generic ostream overload
-template <SequenceContainer T>
-std::ostream &operator<<(std::ostream &ost, const T &container) {
-
-  if (container.empty()) {
-    return ost;
-  }
-
-  uint8_t window_width = GetTerminalWidth();
 
   // How many elements can fit in a line
   uint8_t elem_fit = 0;
@@ -118,7 +115,7 @@ std::ostream &operator<<(std::ostream &ost, const T &container) {
   return ost;
 }
 
-template <ContainerOfSequenceContainer T>
+template <PrintableNestedContainer T>
 std::ostream &operator<<(std::ostream &ost, const T &container) {
 
   for (const auto &item : container) {
@@ -128,4 +125,4 @@ std::ostream &operator<<(std::ostream &ost, const T &container) {
   return ost;
 }
 
-#endif // SEQUENCE_CONTAINER_HPP
+#endif // PRINTABLE_CONTAINER_HPP

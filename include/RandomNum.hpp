@@ -5,6 +5,7 @@
 #include <utility> // std::pair
 
 using uint = unsigned int;
+using ulong = uint64_t;
 
 namespace my_utils {
 
@@ -21,6 +22,16 @@ public:
   T operator()()
     requires std::integral<T>;
   T operator()()
+    requires std::floating_point<T>;
+
+  T operator()(const T &min, const T &max)
+    requires std::integral<T>;
+  T operator()(const T &min, const T &max)
+    requires std::floating_point<T>;
+
+  T operator()(const range_t<T> &range)
+    requires std::integral<T>;
+  T operator()(const range_t<T> &range)
     requires std::floating_point<T>;
 
 private:
