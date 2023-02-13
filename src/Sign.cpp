@@ -22,7 +22,12 @@ constexpr auto SignedToUnsigned(const T &value) {
   return static_cast<std::make_unsigned_t<T>>(value);
 }
 
-// Explicit instantiations
+// U -> S instantiations
 template auto UnsignedToSigned(const unsigned int &value);
+template auto UnsignedToSigned(const unsigned long &value);
+
+// S -> U instantiations
+template auto SignedToUnsigned(const int &value);
+template auto SignedToUnsigned(const long &value);
 
 } // namespace my_utils
